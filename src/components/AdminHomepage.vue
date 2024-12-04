@@ -1,9 +1,9 @@
 <script setup>
-
+import InfoPage from '../pages/InfoPage.vue';
 import { ref, computed } from 'vue';
 
-const filterText = ref('');
-    const filterType = ref('price');
+const sortText = ref('');
+    const sortType = ref('time of order');
     const orders = ref([
         { id: 1, price: 100, deliveryStatus: 'Delivered', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
         { id: 2, price: 200, deliveryStatus: 'Pending', paymentStatus: 'Unpaid', timeOfOrder: '2023-10-01T10:00:00Z' },
@@ -13,47 +13,61 @@ const filterText = ref('');
         // Add more orders as needed
     ]);
 
-    const filteredOrders = computed(() => {
-        return orders.value.filter(order => {
-            if (filterType.value === 'price') {
-                return order.price.toString().includes(filterText.value);
-            } else if (filterType.value === 'delivery status') {
-                return order.deliveryStatus.toLowerCase().includes(filterText.value.toLowerCase());
-            } else if (filterType.value === 'payment status') {
-                return order.paymentStatus.toLowerCase().includes(filterText.value.toLowerCase());
+    const sortOrders = computed(() => {
+        return orders.value.slice().sort((a, b) => {
+            if (sortType.value === 'delivery status') {
+                if (a.deliveryStatus === 'Pending' && b.deliveryStatus !== 'Pending') return -1;
+                if (a.deliveryStatus !== 'Pending' && b.deliveryStatus === 'Pending') return 1;
+                return 0;
+            } else if (sortType.value === 'payment status') {
+                if (a.paymentStatus === 'Unpaid' && b.paymentStatus !== 'Unpaid') return -1;
+                if (a.paymentStatus !== 'Unpaid' && b.paymentStatus === 'Unpaid') return 1;
+                return 0;
             }
-            return true;
+            return 0;
         });
     });
 
+    const tableRows = document.querySelectorAll('tr');
+    tableRows.forEach(row => {
+        row.addEventListener('click', () => {
+            isAdmin.value = false;
+            isLoggedIn.value = false;
+            isInfo.value = true;
+        });
+    });
+
+    console.log(tableRows);
+
+    // json webtoken to make sure refresh doesn't happen
     
 </script>
 
 <template>
     <div class="orders">
         <h1>Orders</h1>
-        <select v-model="filterType">
-            <option value="price">Price</option>
-            <option value="delivery status">Delivery Status</option>
-            <option value="payment status">Payment Status</option>
-        </select>
-        <input v-model="filterText" placeholder="Filter orders" />
+        <div class="sorting">
+            <h2>Sort on:</h2>
+            <select v-model="sortType">
+                <option value="delivery status">Delivery Status</option>
+                <option value="payment status">Payment Status</option>
+                <option value="time of order">Time of order</option>
+            </select>
+        </div>
 
         <table class="table">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Name</th>
                     <th>Price</th>
-                    <th>Delivery Status</th>
-                    <th>Payment Status</th>
-                    <th>Time Of Order</th>
+                    <th>Delivery status</th>
+                    <th>Payment status</th>
+                    <th>Time of order</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="order in filteredOrders" :key="order.id">
+                <tr v-for="order in sortOrders" :key="order.id">
                     <td>{{ order.id }}</td>
-                    <td>{{ order.name }}</td>
                     <td>{{ order.price }}</td>
                     <td>{{ order.deliveryStatus }}</td>
                     <td>{{ order.paymentStatus }}</td>
@@ -80,9 +94,16 @@ h1{
     font-weight: 800;
 }
 
+.sorting{
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: 152px;
+}
+
 select{
     border: none;
-    outline: none;
+    outline: none;   
 }
 
 option:hover {
@@ -96,13 +117,17 @@ table {
 }
 
 th, td {
-    border: 1px solid #ddd;
+    border: 1px solid #69ff47;
     padding: 8px;
 }
 
 th {
-    background-color: #f2f2f2;
+    background-color: #69ff47;
     text-align: left;
+}
+
+tr:hover{
+    background-color: #e1ffda;
 }
 
 </style>

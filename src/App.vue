@@ -1,8 +1,10 @@
 <script setup>
 import { RouterView } from 'vue-router'
+import DefaultNav from './components/DefaultNav.vue'
 </script>
 
 <template>
+  <DefaultNav />
   <main>
     <RouterView />
   </main>
@@ -21,4 +23,5 @@ import { RouterView } from 'vue-router'
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }
+
 </style>

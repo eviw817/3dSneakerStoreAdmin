@@ -1,24 +1,45 @@
 <script lang="js" setup>
-import { ref } from 'vue'
 import DefaultNav from '../components/DefaultNav.vue'
-import Login from '../components/LogIn.vue'
+import Login from './LogIn.vue'
 import AdminHomepage from '../components/AdminHomepage.vue'
+import InfoPage from './InfoPage.vue'
 
-const isLoggedIn = ref(false)
+import { ref, onMounted } from 'vue';
 
-function handleLogin() {
-    isLoggedIn.value = true
-}
+import { createRouter, createWebHistory } from 'vue-router';
+
+const routes = [
+    { path: '/', component: DefaultNav },
+    { path: '/login', component: Login },
+    { path: '/admin', component: AdminHomepage },
+    { path: '/info', component: InfoPage },
+];
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes,
+});
+
+onMounted(() => {
+    const loginBtn = document.querySelector('.login-btn');
+    if (loginBtn) {
+        loginBtn.addEventListener('click', () => {
+            router.push('/admin');
+        });
+    }
+});
+
 </script>
 
 <template>
-    <DefaultNav />
-    <Login v-if="!isLoggedIn" @login="handleLogin" />
-    <AdminHomepage v-if="isLoggedIn" />
+    <Login v-if="isLoggedIn" />
+    <AdminHomepage v-if="isAdmin" />
+    <InfoPage v-if="isInfo"/>
 </template>
 
 <style module>
 body {
     font-family: 'Satoshi', sans-serif;
 }
+
 </style>
