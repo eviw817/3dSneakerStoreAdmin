@@ -1,45 +1,137 @@
-<script lang="js" setup>
-import DefaultNav from '../components/DefaultNav.vue'
-import Login from './LogIn.vue'
-import AdminHomepage from '../components/AdminHomepage.vue'
-import InfoPage from './InfoPage.vue'
+<script setup>
+import InfoPage from './InfoPage.vue';
+import { ref, computed } from 'vue';
+import { RouterLink } from 'vue-router';
 
-import { ref, onMounted } from 'vue';
+const sortText = ref('');
+    const sortType = ref('time of order');
+    const orders = ref([
+        { id: 1, price: "€100", deliveryStatus: 'Delivered', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
+        { id: 2, price: "€200", deliveryStatus: 'Pending', paymentStatus: 'Unpaid', timeOfOrder: '2023-10-01T10:00:00Z' },
+        { id: 3, price: "€300", deliveryStatus: 'Delivered', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
+        { id: 4, price: "€400", deliveryStatus: 'Delivered', paymentStatus: 'Unpaid', timeOfOrder: '2023-10-01T10:00:00Z' },
+        { id: 5, price: "€500", deliveryStatus: 'Pending', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
+        // Add more orders as needed
+    ]);
 
-import { createRouter, createWebHistory } from 'vue-router';
-
-const routes = [
-    { path: '/', component: DefaultNav },
-    { path: '/login', component: Login },
-    { path: '/admin', component: AdminHomepage },
-    { path: '/info', component: InfoPage },
-];
-
-const router = createRouter({
-    history: createWebHistory(),
-    routes,
-});
-
-onMounted(() => {
-    const loginBtn = document.querySelector('.login-btn');
-    if (loginBtn) {
-        loginBtn.addEventListener('click', () => {
-            router.push('/admin');
+    const sortOrders = computed(() => {
+        return orders.value.slice().sort((a, b) => {
+            if (sortType.value === 'delivery status') {
+                if (a.deliveryStatus === 'Pending' && b.deliveryStatus !== 'Pending') return -1;
+                if (a.deliveryStatus !== 'Pending' && b.deliveryStatus === 'Pending') return 1;
+                return 0;
+            } else if (sortType.value === 'payment status') {
+                if (a.paymentStatus === 'Unpaid' && b.paymentStatus !== 'Unpaid') return -1;
+                if (a.paymentStatus !== 'Unpaid' && b.paymentStatus === 'Unpaid') return 1;
+                return 0;
+            }
+            return 0;
         });
-    }
-});
+    });
 
+    // json webtoken to make sure refresh doesn't happen
+    
 </script>
 
 <template>
-    <Login v-if="isLoggedIn" />
-    <AdminHomepage v-if="isAdmin" />
-    <InfoPage v-if="isInfo"/>
+    <main class="orders">
+        <h1>Orders</h1>
+        <div class="sorting">
+            <h2>Sort on:</h2>
+            <select v-model="sortType">
+                <option value="delivery status">Delivery Status</option>
+                <option value="payment status">Payment Status</option>
+                <option value="time of order">Time of order</option>
+            </select>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Price</th>
+                    <th>Delivery status</th>
+                    <th>Payment status</th>
+                    <th>Time of order</th>
+                    <th>More info</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="order in sortOrders" :key="order.id">
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.price }}</td>
+                    <td>{{ order.deliveryStatus }}</td>
+                    <td>{{ order.paymentStatus }}</td>
+                    <td>{{ order.timeOfOrder }}</td>
+                    <td><RouterLink to="/info">
+                        <span class="material-symbols-rounded info">info</span>
+                    </RouterLink></td>
+                </tr>
+                
+            </tbody>
+        </table>
+        
+    </main>
 </template>
 
-<style module>
-body {
-    font-family: 'Satoshi', sans-serif;
+<style scoped>
+
+.orders{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1{
+    font-size: 4rem;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.sorting{
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: 152px;
+}
+
+select{
+    border: none;
+    outline: none;   
+}
+
+option:hover {
+    background-color: #69ff47;
+}
+
+table {
+    margin: 20px;
+    border-collapse: collapse;
+    width: 80%;
+}
+
+th, td {
+    border: 1px solid #69ff47;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background-color: #69ff47;
+}
+
+tr:hover{
+    background-color: #e1ffda;
+}
+
+.material-symbols-rounded {
+    font-family: 'Material Symbols Rounded';
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 48;
 }
 
 </style>

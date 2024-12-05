@@ -1,9 +1,11 @@
 <script setup>
 
+import { RouterLink } from 'vue-router';
+
 </script>
 
 <template>
-    <div class="login">
+    <main class="login"> 
         <h1>Log In</h1>
         <div class="email">
             <label for="email">Email</label>
@@ -15,10 +17,10 @@
             <input type="password" id="password" name="password">
             <hr>
         </div>
-        <a href="#"><div class="login-btn">
+        <RouterLink class="login-btn" to="/home">
             <p>Log In</p>
-        </div></a>
-    </div>
+        </RouterLink>
+    </main>
 </template>
 
 <style scoped>

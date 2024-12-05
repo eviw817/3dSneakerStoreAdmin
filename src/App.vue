@@ -1,6 +1,7 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import DefaultNav from './components/DefaultNav.vue'
+
 </script>
 
 <template>
