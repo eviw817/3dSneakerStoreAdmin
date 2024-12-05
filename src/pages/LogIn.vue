@@ -49,12 +49,12 @@ h1{
 }
 
 hr:hover{
-    color: #000000;
+    color: #0d0d0d;
     
 }
 
 input:focus + hr {
-    border-color: #384ad3;
+    border-color: #69ff47;
 }
 
 input{
@@ -74,7 +74,5 @@ input{
     background-color: #cccccc;
     color: #ffffff;
 }
-
-
 
 </style>

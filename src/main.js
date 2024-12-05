@@ -4,12 +4,14 @@ import App from './App.vue'
 import Login from './pages/LogIn.vue'
 import Homepage from './pages/HomePage.vue'
 import Info from './pages/InfoPage.vue'
+import EditInfo from './pages/EditInfoPage.vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 const routes = [
     { path: '/', component: Login },
     { path: '/home', component: Homepage },	
-    { path: '/info', component: Info }
+    { path: '/info', component: Info },
+    { path: '/editInfo', component: EditInfo },
 ]
 
 const router = createRouter({

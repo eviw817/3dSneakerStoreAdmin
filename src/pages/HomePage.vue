@@ -8,7 +8,7 @@ const sortText = ref('');
     const orders = ref([
         { id: 1, price: "€100", deliveryStatus: 'Delivered', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
         { id: 2, price: "€200", deliveryStatus: 'Pending', paymentStatus: 'Unpaid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        { id: 3, price: "€300", deliveryStatus: 'Delivered', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
+        { id: 3, price: "€300", deliveryStatus: 'Cancelled', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
         { id: 4, price: "€400", deliveryStatus: 'Delivered', paymentStatus: 'Unpaid', timeOfOrder: '2023-10-01T10:00:00Z' },
         { id: 5, price: "€500", deliveryStatus: 'Pending', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
         // Add more orders as needed
@@ -35,6 +35,7 @@ const sortText = ref('');
 
 <template>
     <main class="orders">
+        <RouterLink class="logout-btn" to="/" @click="logout">Logout</RouterLink>
         <h1>Orders</h1>
         <div class="sorting">
             <h2>Sort on:</h2>
@@ -60,8 +61,8 @@ const sortText = ref('');
                 <tr v-for="order in sortOrders" :key="order.id">
                     <td>{{ order.id }}</td>
                     <td>{{ order.price }}</td>
-                    <td>{{ order.deliveryStatus }}</td>
-                    <td>{{ order.paymentStatus }}</td>
+                    <td class="delivery">{{ order.deliveryStatus }}</td>
+                    <td class="payment">{{ order.paymentStatus }}</td>
                     <td>{{ order.timeOfOrder }}</td>
                     <td><RouterLink to="/info">
                         <span class="material-symbols-rounded info">info</span>
@@ -75,6 +76,19 @@ const sortText = ref('');
 </template>
 
 <style scoped>
+
+.logout-btn{
+    position: absolute;
+    top: 100px;
+    left: 40px;
+    margin-bottom: 20px;
+    padding: 10px;
+    font-weight: 500;
+    border: 2px solid #ff0000;
+    border-radius: 12px;
+    background-color: #ff0000;
+    text-decoration: none;
+}
 
 .orders{
     display: flex;
