@@ -1,25 +1,51 @@
 <script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-import { RouterLink } from 'vue-router';
+const username = ref('');
+const password = ref('');
+const router = useRouter();
+
+const handleLogin = async () => {
+    if (username.value === 'admin@admin.com' && password.value === 'Admin') {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/users/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: username.value, password: password.value })
+        });
+
+        const data = await response.json();
+        console.log(data);
+
+        if (data.data.token) {
+            localStorage.setItem('token', data.data.token);
+            router.push('/home');
+        } else {
+            console.error('Login failed: No token received');
+        }
+    } else {
+        console.error('Invalid credentials');
+    }
+};
 
 </script>
 
 <template>
     <main class="login"> 
         <h1>Log In</h1>
-        <div class="email">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email">
+        <div class="username">
+            <label for="username">Username</label>
+            <input v-model="username" type="username" id="username" name="username">
             <hr>
         </div>
         <div class="password">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password">
+            <input v-model="password" type="password" id="password" name="password">
             <hr>
         </div>
-        <RouterLink class="login-btn" to="/home">
-            <p>Log In</p>
-        </RouterLink>
+        <button class="login-btn" @click="handleLogin">Log In</button>
     </main>
 </template>
 
@@ -29,7 +55,7 @@ import { RouterLink } from 'vue-router';
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 60px;
+    margin-top: 40px;
 }
 
 h1{
@@ -39,13 +65,18 @@ h1{
     font-weight: 800;
 }
 
-.email, .password{
+.username, .password{
     width: 20%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     margin-top: 20px;
     color: #757575;
+}
+
+hr{
+    width: 100%;
+    border: 1px solid #757575;
 }
 
 hr:hover{
@@ -66,13 +97,19 @@ input{
 }
 
 .login-btn{
+    border: none;
     margin-top: 40px;
-    font-size: em;
-    font-weight: 500;
+    font-size: 1.1rem;
+    font-weight: 600;
 
-    padding: 12px 130px;
+    padding: 12px 60px;
     background-color: #cccccc;
     color: #ffffff;
+}
+
+.login-btn:hover{
+    background-color: #69ff47;
+    color: #0d0d0d;
 }
 
 </style>

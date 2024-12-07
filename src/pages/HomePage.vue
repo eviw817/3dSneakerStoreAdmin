@@ -1,7 +1,7 @@
 <script setup>
 import InfoPage from './InfoPage.vue';
 import { ref, computed } from 'vue';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 
 const sortText = ref('');
     const sortType = ref('time of order');
@@ -29,14 +29,25 @@ const sortText = ref('');
         });
     });
 
-    // json webtoken to make sure refresh doesn't happen
-    
+    const router = useRouter();
+    const logout = () => {
+        // Clear the token (assuming it's stored in localStorage)
+        localStorage.removeItem('token');
+        // Redirect to the login page
+        router.push('/');
+    };
+
+
 </script>
 
 <template>
     <main class="orders">
         <RouterLink class="logout-btn" to="/" @click="logout">Logout</RouterLink>
-        <h1>Orders</h1>
+        <div class="page-title">
+            <h1 class="usingTitle">Orders</h1>
+            <h1> | </h1>
+            <RouterLink class="router-link" to="/user"><h1>Users</h1></RouterLink>
+        </div>
         <div class="sorting">
             <h2>Sort on:</h2>
             <select v-model="sortType">
@@ -87,7 +98,32 @@ const sortText = ref('');
     border: 2px solid #ff0000;
     border-radius: 12px;
     background-color: #ff0000;
+    color: #0d0d0d;
     text-decoration: none;
+}
+
+.page-title{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-title h1:nth-child(2){ 
+    font-size: 3rem;
+    margin: 0px 20px;
+    font-weight: 500;
+}
+
+.router-link{
+    text-decoration: none;
+    color: #0d0d0d;
+    font-size: 3rem;
+    font-weight: 500;
+}
+
+.usingTitle{
+    color: #69ff47;
 }
 
 .orders{
@@ -137,6 +173,10 @@ th {
 
 tr:hover{
     background-color: #e1ffda;
+}
+
+td span{
+    color: #69ff47;
 }
 
 .material-symbols-rounded {

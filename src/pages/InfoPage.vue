@@ -103,7 +103,9 @@ function confirmDelete() {
     position: absolute;
     top: 100px;
     left: 40px;
+    color: #69ff47;
 }
+
 
 .info{
     display: flex;
@@ -140,7 +142,7 @@ h2{
     margin-top: 20px;
     display: flex;
     justify-content: space-between;
-    width: 50%;
+    width: 70%;
 }
 
 .parts-info{
@@ -153,12 +155,17 @@ h2{
 }
 
 .parts-info h3{
-    width: 80px;
+    margin: 10px 0px;
+    width: 100px;
     text-align: center;
 }
 
 .parts-info:nth-child(4) h3 {
-    width: 89px;
+    width: 108px;   
+}
+
+.parts-info h4{
+    margin: 0px;
 }
 
 .materials-colors{
