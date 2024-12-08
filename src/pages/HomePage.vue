@@ -96,7 +96,6 @@ const sortText = ref('');
     padding: 10px;
     font-weight: 500;
     border: 2px solid #ff0000;
-    border-radius: 12px;
     background-color: #ff0000;
     color: #0d0d0d;
     text-decoration: none;

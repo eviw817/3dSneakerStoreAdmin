@@ -122,6 +122,7 @@ function confirmDelete() {
 .info-style p{
     display: flex;
     align-items: center;
+    margin: 0px;
 }
 
 h1{
@@ -133,7 +134,13 @@ h1{
 
 h2{
     font-size: 1.5rem;
-    margin-top: 10px;
+    margin: 0px;
+    font-weight: 500;
+}
+
+h3{
+    font-size: 1.2rem;
+    margin: 0px;
     margin-bottom: 10px;
     font-weight: 500;
 }
@@ -151,7 +158,6 @@ h2{
     align-items: center;
     padding: 10px;
     border: 2px solid #69ff47;
-    border-radius: 10px;
 }
 
 .parts-info h3{
@@ -189,13 +195,11 @@ button {
 .grey-btn{
     border: 2px solid #69ff47;
     background-color: #69ff47;
-    border-radius: 10px;
 }
 
 .red-btn{
     border: 2px solid #ff0000;
     background-color: #ff0000;
-    border-radius: 10px;
 }
 
 .popup-mask {
@@ -221,7 +225,6 @@ button {
     margin: 0px auto;
     padding: 20px 30px;
     background-color: #fdfdfd;
-    border-radius: 12px;
     transition: all 0.3s ease;
     text-align: center;
 }
@@ -229,6 +232,7 @@ button {
 .popup-container p{
     margin-top: 30px;
     margin-bottom: 20px;
+
 }
 
 </style>
