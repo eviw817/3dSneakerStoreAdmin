@@ -59,7 +59,7 @@ const logout = () => {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="order in sortOrders" :key="order.id">
+                <tr v-for="order in orders" :key="order.id">
                     <td>{{ order._id }}</td>
                     <td>{{ order.price }}</td>
                     <td class="delivery">{{ order.deliveryStatus }}</td>
