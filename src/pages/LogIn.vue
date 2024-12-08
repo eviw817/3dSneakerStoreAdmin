@@ -21,6 +21,7 @@ const handleLogin = async () => {
         
         if (userData.data.user.isAdmin) {
             localStorage.setItem('token', userData.data.token);
+            console.log(userData.data.token);
             router.push('/home');
         } else {
             error.value = 'Access denied: User is not an admin';

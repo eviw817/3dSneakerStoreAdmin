@@ -1,19 +1,30 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 
-const orders = ref([
-        { id: 1, price: "€100", deliveryStatus: 'Delivered', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z', size: 'EU 37', shoeName: 'Evi' },
-        { id: 2, price: "€200", deliveryStatus: 'Pending', paymentStatus: 'Unpaid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        { id: 3, price: "€300", deliveryStatus: 'Cancelled', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        { id: 4, price: "€400", deliveryStatus: 'Delivered', paymentStatus: 'Unpaid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        { id: 5, price: "€500", deliveryStatus: 'Pending', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        // Add more orders as needed
-]);
+const orders = ref([]);
+const route = useRoute()
 
-function editOrder() {
-    // Add your edit logic here
-}
+const fetchOrderById = async () => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/orders/${route.params.id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        });
+        const data = await response.json();
+        orders.value = data;
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+    }
+};
+
+onMounted(() => {
+    fetchOrderById();
+});
 
 const showPopup = ref(false);
 

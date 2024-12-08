@@ -1,19 +1,30 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 
-const orders = ref([
-        { id: 1, price: "€100", deliveryStatus: 'Delivered', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        { id: 2, price: "€200", deliveryStatus: 'Pending', paymentStatus: 'Unpaid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        { id: 3, price: "€300", deliveryStatus: 'Delivered', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        { id: 4, price: "€400", deliveryStatus: 'Delivered', paymentStatus: 'Unpaid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        { id: 5, price: "€500", deliveryStatus: 'Pending', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        // Add more orders as needed
-]);
+const orders = ref([]);
+const route = useRoute()
 
-function editOrder() {
-    // Add your edit logic here
-}
+const fetchOrderById = async () => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/orders/${route.params.id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        });
+        const data = await response.json();
+        orders.value = data;
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+    }
+};
+
+onMounted(() => {
+    fetchOrderById();
+});
 
 const showPopup = ref(false);
 
@@ -33,46 +44,47 @@ function confirmDelete() {
 </script>
 
 <template>
-    <main class="info">
+    <main class="info" v-for="order in orders" :key="order.id">
 
         <RouterLink to="/home" class="back-btn">
             <span class="material-symbols-rounded">arrow_back_ios</span>
         </RouterLink>
 
-        <h1>Order 1</h1>
+        <h1>{{ order.title }}</h1>
         <div class="info-style">
             <h2>Price:</h2>
-            <p>€100</p>
+            <p>€{{ order.price }}</p>
         </div>
         <div class="info-style">
             <h2>Delivery Status:</h2>
-            <p>Delivered</p>
+            <p>{{ order.deliveryStatus }}</p>
         </div>
         <div class="info-style">
             <h2>Payment Status:</h2>
-            <p>Paid</p>
+            <p>{{ order.paymentStatus }}</p>
         </div>
         <div class="info-style">
             <h2>Time of Order:</h2>
-            <p>2023-10-01T10:00:00Z</p>
+            <p>{{ new Date(order.timeOfOrder).toLocaleDateString() }} {{ new Date(order.timeOfOrder).toLocaleTimeString() }}</p>
         </div>
         <div class="info-style">
             <h2>Size:</h2>
-            <p>EU 37</p>
+            <p>EU {{ order.size }}</p>
         </div>
         <div class="info-style">
             <h2>Shoe name:</h2>
-            <p>Evi</p>
+            <p>{{ order.name }}</p>
         </div>
         <div class="parts">
-            <div class="parts-info" v-for="(part, index) in ['Outside_1', 'Outside_2', 'Outside_3', 'Sole_bottom', 'Sole_top', 'Inside', 'Laces']" :key="index">
-                <h3>{{ part }}</h3>
-                <h4 class="materials-colors">{{ ['Black', 'White', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Brown'][index % 9] }}</h4>
-                <h4 class="materials-colors">{{ ['Leather', 'Fabric', 'Rubber', 'Metallic'][index % 4] }}</h4>
+            <div class="parts-info" v-for="(part, key) in order.parts">
+                {{ console.log(key, part) }}
+                <h3>{{ key }}</h3>
+                <h4 class="materials-colors">{{ part.color }}</h4>
+                <h4 class="materials-colors">{{ part.material }}</h4>
             </div>
         </div>
         <div class="buttons">
-            <RouterLink to="/editInfo"><button class="grey-btn">Edit</button></RouterLink>
+            <RouterLink :to="`/editInfo/${order._id}`"><button class="grey-btn">Edit</button></RouterLink>
             <button class="red-btn" @click="deleteOrder">Delete</button>
         </div>
         <Transition v-if="showPopup" class="popup">

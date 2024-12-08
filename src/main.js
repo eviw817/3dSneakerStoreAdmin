@@ -11,8 +11,8 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 const routes = [
     { path: '/', component: Login },
     { path: '/home', component: Homepage },	
-    { path: '/info', component: Info },
-    { path: '/editInfo', component: EditInfo },
+    { path: '/info/:id', component: Info },
+    { path: '/editInfo/:id', component: EditInfo },
     { path: '/user', component: UserPage }
 ]
 

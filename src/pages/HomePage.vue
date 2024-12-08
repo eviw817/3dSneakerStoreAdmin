@@ -1,42 +1,54 @@
 <script setup>
-import InfoPage from './InfoPage.vue';
 import { ref, computed } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 
-const sortText = ref('');
-    const sortType = ref('time of order');
-    const orders = ref([
-        { id: 1, price: "€100", deliveryStatus: 'Delivered', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        { id: 2, price: "€200", deliveryStatus: 'Pending', paymentStatus: 'Unpaid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        { id: 3, price: "€300", deliveryStatus: 'Cancelled', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        { id: 4, price: "€400", deliveryStatus: 'Delivered', paymentStatus: 'Unpaid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        { id: 5, price: "€500", deliveryStatus: 'Pending', paymentStatus: 'Paid', timeOfOrder: '2023-10-01T10:00:00Z' },
-        // Add more orders as needed
-    ]);
+const sortType = ref('time of order');
+const orders = ref([]);
+import { onMounted } from 'vue';
 
-    const sortOrders = computed(() => {
-        return orders.value.slice().sort((a, b) => {
-            if (sortType.value === 'delivery status') {
-                if (a.deliveryStatus === 'Pending' && b.deliveryStatus !== 'Pending') return -1;
-                if (a.deliveryStatus !== 'Pending' && b.deliveryStatus === 'Pending') return 1;
-                return 0;
-            } else if (sortType.value === 'payment status') {
-                if (a.paymentStatus === 'Unpaid' && b.paymentStatus !== 'Unpaid') return -1;
-                if (a.paymentStatus !== 'Unpaid' && b.paymentStatus === 'Unpaid') return 1;
-                return 0;
-            }
-            return 0;
+const fetchOrders = async () => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/orders`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
         });
+        const data = await response.json();
+        orders.value = data;
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+    }
+};
+
+onMounted(() => {
+    fetchOrders();
+});
+
+const sortOrders = computed(() => {
+    return orders.value.slice().sort((a, b) => {
+        if (sortType.value === 'delivery status') {
+            if (a.deliveryStatus === 'Pending' && b.deliveryStatus !== 'Pending') return -1;
+            if (a.deliveryStatus !== 'Pending' && b.deliveryStatus === 'Pending') return 1;
+            return 0;
+        } else if (sortType.value === 'payment status') {
+            if (a.paymentStatus === 'Unpaid' && b.paymentStatus !== 'Unpaid') return -1;
+            if (a.paymentStatus !== 'Unpaid' && b.paymentStatus === 'Unpaid') return 1;
+            return 0;
+        }
+        return 0;
     });
+});
 
-    const router = useRouter();
-    const logout = () => {
-        // Clear the token (assuming it's stored in localStorage)
-        localStorage.removeItem('token');
-        // Redirect to the login page
-        router.push('/');
-    };
-
+const router = useRouter();
+const logout = () => {
+    // Clear the token (assuming it's stored in localStorage)
+    localStorage.removeItem('token');
+    // Redirect to the login page
+    router.push('/');
+};
 
 </script>
 
@@ -70,14 +82,16 @@ const sortText = ref('');
             </thead>
             <tbody>
                 <tr v-for="order in sortOrders" :key="order.id">
-                    <td>{{ order.id }}</td>
+                    <td>{{ order._id }}</td>
                     <td>{{ order.price }}</td>
                     <td class="delivery">{{ order.deliveryStatus }}</td>
                     <td class="payment">{{ order.paymentStatus }}</td>
-                    <td>{{ new Date(order.timeOfOrder).toLocaleDateString() }}</td>
-                    <td><RouterLink to="/info">
-                        <span class="material-symbols-rounded info">info</span>
-                    </RouterLink></td>
+                    <td>{{ new Date(order.timeOfOrder).toLocaleDateString() }} {{ new Date(order.timeOfOrder).toLocaleTimeString() }}</td>
+                    <td>   
+                        <RouterLink :to="`/info/${order._id}`">
+                            <span class="material-symbols-rounded info">info</span>
+                        </RouterLink>
+                    </td>
                 </tr>
                 
             </tbody>
