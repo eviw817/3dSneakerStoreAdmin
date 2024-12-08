@@ -74,7 +74,7 @@ const sortText = ref('');
                     <td>{{ order.price }}</td>
                     <td class="delivery">{{ order.deliveryStatus }}</td>
                     <td class="payment">{{ order.paymentStatus }}</td>
-                    <td>{{ order.timeOfOrder }}</td>
+                    <td>{{ new Date(order.timeOfOrder).toLocaleDateString() }}</td>
                     <td><RouterLink to="/info">
                         <span class="material-symbols-rounded info">info</span>
                     </RouterLink></td>

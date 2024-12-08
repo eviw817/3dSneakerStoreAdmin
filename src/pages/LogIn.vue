@@ -4,36 +4,38 @@ import { useRouter } from 'vue-router';
 
 const username = ref('');
 const password = ref('');
+const error = ref('');
 const router = useRouter();
 
 const handleLogin = async () => {
-    if (username.value === 'admin@admin.com' && password.value === 'Admin') {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/users/login`, {
+    try {
+        error.value = '';
+        const call = await fetch(`${import.meta.env.VITE_API_URL}/users/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ username: username.value, password: password.value })
         });
-
-        const data = await response.json();
-        console.log(data);
-
-        if (data.data.token) {
-            localStorage.setItem('token', data.data.token);
+        const userData = await call.json();
+        
+        if (userData.data.user.isAdmin) {
+            localStorage.setItem('token', userData.data.token);
             router.push('/home');
         } else {
-            console.error('Login failed: No token received');
+            error.value = 'Access denied: User is not an admin';
         }
-    } else {
-        console.error('Invalid credentials');
+
+    } catch (e) {
+        error.value = 'Something went wrong. Please try again';
+        console.error(e);
     }
 };
 
 </script>
 
 <template>
-    <main class="login"> 
+    <main class="login">
         <h1>Log In</h1>
         <div class="username">
             <label for="username">Username</label>
@@ -45,27 +47,28 @@ const handleLogin = async () => {
             <input v-model="password" type="password" id="password" name="password">
             <hr>
         </div>
+        <span v-if="error !== '' ">{{ error }}</span>
         <button class="login-btn" @click="handleLogin">Log In</button>
     </main>
 </template>
 
 <style scoped>
-
-.login{
+.login {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 40px;
 }
 
-h1{
+h1 {
     font-size: 4rem;
     margin-top: 20px;
     margin-bottom: 20px;
     font-weight: 800;
 }
 
-.username, .password{
+.username,
+.password {
     width: 20%;
     display: flex;
     flex-direction: column;
@@ -74,21 +77,21 @@ h1{
     color: #757575;
 }
 
-hr{
+hr {
     width: 100%;
     border: 1px solid #757575;
 }
 
-hr:hover{
+hr:hover {
     color: #0d0d0d;
-    
+
 }
 
-input:focus + hr {
+input:focus+hr {
     border-color: #69ff47;
 }
 
-input{
+input {
     border: none;
     outline: none;
     background-color: transparent;
@@ -96,7 +99,7 @@ input{
     padding: 8px 0px;
 }
 
-.login-btn{
+.login-btn {
     border: none;
     margin-top: 40px;
     font-size: 1.1rem;
@@ -107,9 +110,8 @@ input{
     color: #ffffff;
 }
 
-.login-btn:hover{
+.login-btn:hover {
     background-color: #69ff47;
     color: #0d0d0d;
 }
-
 </style>
