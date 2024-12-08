@@ -1,8 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 
-const sortType = ref('time of order');
 const orders = ref([]);
 import { onMounted } from 'vue';
 
