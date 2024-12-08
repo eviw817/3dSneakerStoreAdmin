@@ -23,8 +23,8 @@ const fetchOrders = async () => {
     }
 };
 
-onMounted(() => {
-    fetchOrders();
+onMounted( async () => {
+    await fetchOrders();
 });
 
 
