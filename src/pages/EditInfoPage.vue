@@ -2,23 +2,53 @@
 import { ref, onMounted } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
-const orders = ref([]);
+const order = ref({});
+const user = ref({});
 const route = useRoute()
 
 const fetchOrderById = async () => {
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/orders/${route.params.id}`, {
+        const orderResponse = await fetch(`${import.meta.env.VITE_API_URL}/orders/${route.params.id}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
         });
-        const data = await response.json();
-        orders.value = data;
+        const orderData = await orderResponse.json();
+        order.value = orderData;
+
+        const userResponse = await fetch(`${import.meta.env.VITE_API_URL}/users/${orderData.userId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        });
+        const userData = await userResponse.json();
+        user.value = userData;
+
     } catch (error) {
         console.error('Error fetching orders:', error);
+    }
+};
+
+const updateOne = async () => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/orders/${route.params.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(order.value)
+        });
+        const data = await response.json();
+        order.value = data;
+    } catch (error) {
+        console.error('Error updating order:', error);
     }
 };
 
@@ -26,33 +56,22 @@ onMounted(() => {
     fetchOrderById();
 });
 
-const showPopup = ref(false);
-
-function deleteOrder() {
-    showPopup.value = true;
-}
-
-function closePopup() {
-    showPopup.value = false;
-}
-
-function confirmDelete() {
-    // Add your delete logic here
-    closePopup();
+async function confirmOrder() {
+    await updateOne();
 }
 
 </script>
 
 <template>
     <main class="info">
-        <h1>Order 1</h1>
+        <h1>{{ order.title }}</h1>
         <div class="info-style">
             <h2>Price:</h2>
-            <input class="info-text" type="text" v-model="orders[0].price" />
+            <input class="info-text" type="text" v-model="order.price" />
         </div>
         <div class="info-style">
             <h2>Delivery Status:</h2>
-            <select class="info-dropdown" v-model="orders[0].deliveryStatus">
+            <select class="info-dropdown" v-model="order.deliveryStatus">
                 <option value="Delivered">Delivered</option>
                 <option value="Pending">Pending</option>
                 <option value="Cancelled">Cancelled</option>
@@ -60,31 +79,50 @@ function confirmDelete() {
         </div>
         <div class="info-style">
             <h2>Payment Status:</h2>
-            <select class="info-dropdown" v-model="orders[0].paymentStatus">
+            <select class="info-dropdown" v-model="order.paymentStatus">
                 <option value="Paid">Paid</option>
                 <option value="Unpaid">Unpaid</option>
             </select>
         </div>
         <div class="info-style">
             <h2>Time of Order:</h2>
-            <input class="info-text" type="text" v-model="orders[0].timeOfOrder" />
+            <input class="info-text" type="text" v-model="order.timeOfOrder" />
         </div>
         <div class="info-style">
             <h2>Size:</h2>
-            <input class="info-text" type="text" v-model="orders[0].size" />
+            <input class="info-text" type="text" v-model="order.size" />
         </div>
         <div class="info-style">
             <h2>Shoe name:</h2>
-            <input class="info-text" type="text" v-model="orders[0].shoeName" />
+            <input class="info-text" type="text" v-model="order.shoeName" />
+        </div>
+        <div class="info-style">
+            <h2>User:</h2>
+            <input class="info-text" type="text" v-model="user.username" />
         </div>
         <div class="parts">
-            <div class="parts-info" v-for="(part, index) in ['Outside_1', 'Outside_2', 'Outside_3', 'Sole_bottom', 'Sole_top', 'Inside', 'Laces']" :key="index">
-                <h3>{{ part }}</h3>
-                <input type="text" v-model="['Black', 'White', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Brown'][index % 9]" class="materials-colors part-text" />
-                <input type="text" v-model="['Leather', 'Fabric', 'Rubber', 'Metallic'][index % 4]" class="materials-colors part-text" />
+            <div class="parts-info" v-for="(part, key) in order.parts">
+                <h3>{{ key }}</h3>
+                <select v-model=" part.color " class="materials-colors part-text" >
+                    <option value="Black">Black</option>
+                    <option value="White">White</option>
+                    <option value="Red">Red</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Green">Green</option>
+                    <option value="Yellow">Yellow</option>
+                    <option value="Orange">Orange</option>
+                    <option value="Purple">Purple</option>
+                    <option value="Brown">Brown</option>
+                </select>
+                <select v-model=" part.material " class="materials-colors part-text">
+                    <option value="Leather">Leather</option>
+                    <option value="Fabric">Fabric</option>
+                    <option value="Rubber">Rubber</option>
+                    <option value="Metallic">Metallic</option>
+                </select>
             </div>
         </div>
-        <RouterLink to="/info"><button class="confirm-btn" @click="deleteOrder">Confirm</button></RouterLink>
+        <RouterLink :to="`/info/${order._id}`"><button class="confirm-btn" @click="confirmOrder">Confirm</button></RouterLink>
     </main>
 </template>
 

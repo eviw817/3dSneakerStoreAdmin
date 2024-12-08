@@ -1,30 +1,62 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink, useRoute, useRouter} from 'vue-router';
 
-const orders = ref([]);
+const order = ref({});
+const user = ref({});
 const route = useRoute()
+const router = useRouter();
 
 const fetchOrderById = async () => {
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/orders/${route.params.id}`, {
+        const orderResponse = await fetch(`${import.meta.env.VITE_API_URL}/orders/${route.params.id}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
         });
-        const data = await response.json();
-        orders.value = data;
+        const orderData = await orderResponse.json();
+        order.value = orderData;
+
+        const userResponse = await fetch(`${import.meta.env.VITE_API_URL}/users/${orderData.userId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        });
+        const userData = await userResponse.json();
+        user.value = userData;
+
     } catch (error) {
         console.error('Error fetching orders:', error);
     }
 };
 
-onMounted(() => {
-    fetchOrderById();
+onMounted(async () => {
+    await fetchOrderById();
 });
+
+const deleteOne = async () => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/orders/${route.params.id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        });
+        if (response.ok) {
+            // Redirect to the home page
+            router.push('/home');
+        }
+    } catch (error) {
+        console.error('Error deleting order:', error);
+    }
+};
 
 const showPopup = ref(false);
 
@@ -37,14 +69,14 @@ function closePopup() {
 }
 
 function confirmDelete() {
-    // Add your delete logic here
+    deleteOne();
     closePopup();
 }
 
 </script>
 
 <template>
-    <main class="info" v-for="order in orders" :key="order.id">
+    <main class="info" v-if="order">
 
         <RouterLink to="/home" class="back-btn">
             <span class="material-symbols-rounded">arrow_back_ios</span>
@@ -75,9 +107,12 @@ function confirmDelete() {
             <h2>Shoe name:</h2>
             <p>{{ order.name }}</p>
         </div>
+        <div class="info-style">
+            <h2>User:</h2>
+            <p>{{ user.username }}</p>
+        </div>
         <div class="parts">
             <div class="parts-info" v-for="(part, key) in order.parts">
-                {{ console.log(key, part) }}
                 <h3>{{ key }}</h3>
                 <h4 class="materials-colors">{{ part.color }}</h4>
                 <h4 class="materials-colors">{{ part.material }}</h4>

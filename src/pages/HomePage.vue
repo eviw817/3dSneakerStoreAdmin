@@ -27,20 +27,6 @@ onMounted(() => {
     fetchOrders();
 });
 
-const sortOrders = computed(() => {
-    return orders.value.slice().sort((a, b) => {
-        if (sortType.value === 'delivery status') {
-            if (a.deliveryStatus === 'Pending' && b.deliveryStatus !== 'Pending') return -1;
-            if (a.deliveryStatus !== 'Pending' && b.deliveryStatus === 'Pending') return 1;
-            return 0;
-        } else if (sortType.value === 'payment status') {
-            if (a.paymentStatus === 'Unpaid' && b.paymentStatus !== 'Unpaid') return -1;
-            if (a.paymentStatus !== 'Unpaid' && b.paymentStatus === 'Unpaid') return 1;
-            return 0;
-        }
-        return 0;
-    });
-});
 
 const router = useRouter();
 const logout = () => {
@@ -59,14 +45,6 @@ const logout = () => {
             <h1 class="usingTitle">Orders</h1>
             <h1> | </h1>
             <RouterLink class="router-link" to="/user"><h1>Users</h1></RouterLink>
-        </div>
-        <div class="sorting">
-            <h2>Sort on:</h2>
-            <select v-model="sortType">
-                <option value="delivery status">Delivery Status</option>
-                <option value="payment status">Payment Status</option>
-                <option value="time of order">Time of order</option>
-            </select>
         </div>
 
         <table class="table">
